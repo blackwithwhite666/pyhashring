@@ -39,6 +39,18 @@ Compile extension:
 Usage
 =====
 
+Get node by key:
+
+::
+
+    from pyhashring import HashRing
+    h = HashRing()
+    h.add(b'SlotA')
+    h.add(b'SlotB')
+    h.find('keyA')
+    >>> 'SlotB'
+    h.find('keyB')
+    >>> 'SlotA'
 
 
 Running the test suite

@@ -29,14 +29,22 @@ cdef extern from "hash_ring.h":
     hash_ring_node_t *hash_ring_find_node(hash_ring_t *ring, uint8_t *key, uint32_t keyLen)
     int hash_ring_remove_node(hash_ring_t *ring, uint8_t *name, uint32_t nameLen)
     void hash_ring_print(hash_ring_t *ring)
+    uint32_t hash_ring_get_nodes(hash_ring_t *ring)
+    uint32_t hash_ring_get_replicas(hash_ring_t *ring)
+    HASH_FUNCTION hash_ring_get_hash_fn(hash_ring_t *ring)
+
+
+SHA1 = HASH_FUNCTION_SHA1
+MD5 = HASH_FUNCTION_MD5
 
 
 cdef class HashRing(object):
     cdef hash_ring_t *_c_ring
 
-    def __cinit__(self, int num_replicas=1):
-        assert num_replicas > 0, "num_replicas too small"
-        self._c_ring = hash_ring_create(num_replicas, HASH_FUNCTION_MD5)
+    def __cinit__(self, int replicas=128, hash_func=SHA1):
+        assert replicas > 0, "num_replicas too small"
+        assert hash_func in (SHA1, MD5), "wrong hash function"
+        self._c_ring = hash_ring_create(replicas, hash_func)
         if self._c_ring is NULL:
             raise MemoryError("Can't allocate memory for ring!")
 
@@ -50,12 +58,6 @@ cdef class HashRing(object):
 
     def dump(self):
         hash_ring_print(self._c_ring)
-
-    def get(self, bytes name):
-        cdef hash_ring_node_t *node = hash_ring_get_node(self._c_ring, name, len(name))
-        if node is NULL:
-            raise KeyError("Name not exists!")
-        return <bytes>node.name[:node.nameLen]
 
     def add(self, bytes name):
         if name in self:
@@ -78,4 +80,20 @@ cdef class HashRing(object):
         if rc != HASH_RING_OK:
             raise RuntimeError("Can't remove given node!")
         return True
+
+    property replicas:
+        def __get__(self):
+            return hash_ring_get_replicas(self._c_ring)
+
+    property nodes:
+        def __get__(self):
+            return hash_ring_get_nodes(self._c_ring)
+
+    property hash_func:
+        def __get__(self):
+            return hash_ring_get_hash_fn(self._c_ring)
+
+    def __repr__(self):
+        return ('<{0}(replicas={2.replicas}, nodes={2.nodes}) at {1}>'.
+                format(self.__class__.__name__, hex(id(self)), self))
 

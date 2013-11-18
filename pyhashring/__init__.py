@@ -10,4 +10,4 @@ __docformat__ = 'restructuredtext'
 
 # -eof meta-
 
-from .ring import HashRing
+from .ring import HashRing, SHA1, MD5

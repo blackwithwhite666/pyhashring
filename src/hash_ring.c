@@ -399,3 +399,15 @@ int hash_ring_set_mode(hash_ring_t *ring, HASH_MODE mode) {
         return HASH_RING_ERR;
     }
 }
+
+uint32_t hash_ring_get_nodes(hash_ring_t *ring) {
+    return ring->numNodes;
+}
+
+uint32_t hash_ring_get_replicas(hash_ring_t *ring) {
+    return ring->numReplicas;
+}
+
+HASH_FUNCTION hash_ring_get_hash_fn(hash_ring_t *ring) {
+    return ring->hash_fn;
+}

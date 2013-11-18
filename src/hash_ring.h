@@ -184,4 +184,19 @@ void hash_ring_print(hash_ring_t *ring);
  */
 int hash_ring_set_mode(hash_ring_t *ring, HASH_MODE mode);
 
+/**
+ * Get number of nodes.
+ */
+uint32_t hash_ring_get_nodes(hash_ring_t *ring);
+
+/**
+ * Get number of replicas.
+ */
+uint32_t hash_ring_get_replicas(hash_ring_t *ring);
+
+/**
+ * Get hash function number.
+ */
+HASH_FUNCTION hash_ring_get_hash_fn(hash_ring_t *ring);
+
 #endif
